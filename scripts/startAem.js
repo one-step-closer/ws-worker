@@ -5,12 +5,13 @@ const SKIPPED_FILENAMES_RX = /[\/\\](?:windows|temp|crx-quickstart|\$RECYCLE.BIN
 
 const path = require('path');
 const fs = require('fs');
-const spawn = require('child_process').spawn;
+const exec = require('child_process').exec;
 
 module.exports = async function() {
     const fileName = await getStartAemFilename();
     if (fileName) {
-        spawn('cmd', ['/c', fileName], {cwd: path.dirname(fileName)});
+        console.log('Located AEM runner at ' + fileName);
+        exec('node ./process-runner.js --cmd="' + fileName + '"');
     }
 };
 

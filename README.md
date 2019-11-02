@@ -12,8 +12,12 @@ Client instance is started the following way
 node <path_to_ws_worker>/ws-worker.js --command=<command> --url=<ws://path_to_ws_server>:<ws_server_port> --ifResult=<true_part_command> --ifNoResult=<false_part_command>
 ```
 
-`--command` argument is mandatory for a client. It determines the script to be run **on a remote machine**. If set as a plain string like `--command=myCommand`, the client will look for a `./scripts/myCommand.js` script (path relative to *ws-worker* installation). If set in the format of a file name with a relative or absolute path, the client will look for the script file accordingly.
-Alias: `--run`.
+`--command` argument is mandatory for a client. It determines the script to be run **on a remote machine**. Alias: `--run`.
+- If the argument is set to a plain string like `--command=myCommand`, the client will look for a `./scripts/myCommand.js` script (path relative to *ws-worker* installation). 
+- If set in the format of a file name with a relative or absolute path like `--command=/home/myScripts/myTestScript.js`, the client will look for the script file at specified path. 
+- If set as `--command=@myCommand`, the client will pass then `myCommand` token (without leading `@`) to the server as is, considering it to be a special server-recognized command.
+ 
+ Several commands may be specified, separated by comma. They will be run in sequence.
 
 `--url` argument is optional. If specified, the client will only try to connect to the specified *ws://XXX.XXX.XXX.XXX:YYYY* address. Otherwise, the client will search for any instance of server on the local/vpn networks it is connected to. The latter possibility is handy for e.g. connecting to a laptop computer that is brought in and moved away and has its IP assigned dynamically.
 
@@ -30,6 +34,6 @@ User can control several generic settings through the `config.json` file. Some o
 
 A real-life use case is a command that checks that an AEM server is available on LAN and then sets "aemhost" alias in the local operation system's HOSTS file to the IP of AEM server instance:
 ```shell script
-node ws-worker.js --command=isAemRunning --ifTrue=setAemHost --ifFalse=removeAemHost
+node ws-worker.js --command=isAemRunning --ifTrue=setAemHost --ifFalse=resetAemHost
 ```
 This one can be run via in-built Windows scheduler or cron periodically. If remote AEM server instance is available, "aemhost" alias is switched to its IP. Otherwise, "aemhost" is switched back to 127.0.0.1.
