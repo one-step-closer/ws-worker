@@ -54,7 +54,13 @@ function getSecondaryScript(scriptArg, asString) {
 
     let result;
     try {
-        result = await commander.run(url, getSecondaryScript(command, true));
+        if (!/,/.test(command)) {
+            result = await commander.run(url, getSecondaryScript(command, true));
+        } else {
+            for (const cmd of command.split(',')) {
+                result = await commander.run(url, getSecondaryScript(cmd, true));
+            }
+        }
     } catch (e) {
         if (e.error && e.error.message) {
             console.error(e.error.message);

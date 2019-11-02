@@ -5,56 +5,14 @@ const SKIPPED_FILENAMES_RX = /[\/\\](?:windows|temp|crx-quickstart|\$RECYCLE.BIN
 
 const path = require('path');
 const fs = require('fs');
-const exec = require('child_process').exec;
+const spawn = require('child_process').spawn;
 
 module.exports = async function() {
-    let killResult = await killAemProcesses();
-    if (killResult) {
-        await pause(1000);                  // run for the second time so that if oak-run util was killed first, and cq-quickstart
-        killResult = await killAemProcesses();  // has just started in a batch process, the latter would also be terminated
-    }
-    if (killResult) {
-        await pause(5000);
-    }
     const fileName = await getStartAemFilename();
     if (fileName) {
-        exec('cmd /c "' + fileName + '"', {cwd: path.dirname(fileName)});
+        spawn('cmd', ['/c', fileName], {cwd: path.dirname(fileName)});
     }
 };
-
-async function pause(ms) {
-    return new Promise(resolve => setTimeout(() => resolve(), ms));
-}
-
-async function killAemProcesses() {
-    try {
-        const pids = await getAemPids();
-        if (pids) {
-            pids.forEach(pid => process.kill(pid, 'SIGINT'));
-            return true;
-        }
-    } catch (e) {
-        console.error(`Error terminating AEM process: ${e.message || e}`);
-    }
-    return false;
-}
-
-async function getAemPids() {
-    return new Promise((resolve, reject) => {
-        exec('jps -l -m', (err, stdout) => {
-            if (err) {
-                return reject(err);
-            }
-            const javaModRx = /(\d+)\s+(?:cq-quickstart|oak-run)/ig;
-            const pids = [];
-            let javaMod;
-            while ((javaMod = javaModRx.exec(stdout)) != null) {
-                pids.push(javaMod[1]);
-            }
-            resolve(pids.length ? pids : null);
-        });
-    });
-}
 
 async function getStartAemFilename() {
     return getWindowsDriveNames().then(driveNames => {
