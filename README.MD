@@ -9,7 +9,7 @@ node <path_to_ws_worker>/ws-worker.js
 
 Client instance is started the following way
 ```shell script
-node <path_to_ws_worker>/ws-worker.js --command=<command> --url=<ws://path_to_ws_server>:<ws|_server_port> --ifResult=<true_part_command> --ifNoResult=<false_part_command>
+node <path_to_ws_worker>/ws-worker.js --command=<command> --url=<ws://path_to_ws_server>:<ws_server_port> --ifResult=<true_part_command> --ifNoResult=<false_part_command>
 ```
 
 `--command` argument is mandatory for a client. It determines the script to be run **on a remote machine**. If set as a plain string like `--command=myCommand`, the client will look for a `./scripts/myCommand.js` script (path relative to *ws-worker* installation). If set in the format of a file name with a relative or absolute path, the client will look for the script file accordingly.
