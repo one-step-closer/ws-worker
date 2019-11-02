@@ -1,0 +1,13 @@
+{
+    "background_worker_port": 45020,
+
+    "allowed_background_worker_hostnames": [],
+
+    "allow_localhost_worker": true,
+
+    "allowed_client_hostnames": [],
+
+    "command_timeout": 10000,
+
+    "localhost_address": "127.0.0.1"
+}
