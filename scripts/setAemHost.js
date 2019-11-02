@@ -14,7 +14,7 @@ module.exports = results => {
         if (!err) {
             console.log(`Set "aemhost" alias to ${host} in HOSTS file`);
         } else if (err['code'] === 'EPERM') {
-            console.error('Cannot write "aemhost" alias to HOSTS, try run as root/Administrator');
+            console.error('Cannot set "aemhost" alias to HOSTS file, try to run as root/Administrator');
         } else{
             console.error(err)
         }

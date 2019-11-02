@@ -31,6 +31,7 @@ module.exports.start = (port) => {
 
 const builtInHandlers = {
     hello: () => os.hostname(),
+    locate: () => 'true'
 };
 
 async function handleCommand(value) {

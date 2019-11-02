@@ -21,7 +21,9 @@ Alias: `--run`.
 
 `--ifNoResult` argument is optional. If specified, it represents a script to be run **on the local machine** in case no valid remote sever found, or else a command is set to a server and a falsy (empty) response is received. Aliases: `--ifFalse`, `--ifNo`.
 
-User can control several generic settings through the `config.json` file
+There are several scripts to be used with `--command`, `--ifResult`, and `--ifNoResult` stored in ./scripts folder. Others can be created manually. Each must follow the node.js importable modules' pattern. If you use third-part required modules there, make sure thay are installed as global dependencies on a machine that wil serve as "server".
+
+User can control several generic settings through the `config.json` file. Some of them are:
 - `background_worker_port` to specify which port server will work on;
 - `allowed_background_worker_hostnames` to specify computer name(-s) service may run on. This is to marshal multiple **ws-worker** servers operating in the same LAN. The client, when looking for an appropriate server, will always pick the first one that satisfies the criteria;
 - `allowed_client_hostnames` to specify which clients this particular server will accept. This is a bit of a security feature to prevent other users' client from manipulating "my own" **ws-worker** unintentionally.   

@@ -15,6 +15,8 @@ function getSecondaryScript(scriptArg, asString) {
     const defaultResult = asString ? '' : noop;
     if (!scriptArg) {
         return defaultResult;
+    } else if (scriptArg.startsWith('@')) {
+        return scriptArg.substring(1);
     }
     const scriptPath = !/\.js/i.test(scriptArg)
         ? path.resolve(process.cwd(), 'scripts', scriptArg + '.js')
@@ -54,9 +56,13 @@ function getSecondaryScript(scriptArg, asString) {
     try {
         result = await commander.run(url, getSecondaryScript(command, true));
     } catch (e) {
-        let errorMsg = ('error' in e) ? e.error : e;
-        if ('message' in errorMsg) errorMsg = e.message;
-        console.error(errorMsg);
+        if (e.error && e.error.message) {
+            console.error(e.error.message);
+        } else if (e.message) {
+            console.error(e.message);
+        } else {
+            console.error(e);
+        }
         return;
     }
 
