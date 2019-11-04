@@ -6,35 +6,21 @@ const commander = require('./commander.js');
 
 const path = require('path');
 const fs = require('fs');
+const Service = require('node-windows').Service;
 
 const config = require('./config.json');
 
 const noop = ()=>{};
 
-function getSecondaryScript(scriptArg, asString) {
-    const defaultResult = asString ? '' : noop;
-    if (!scriptArg) {
-        return defaultResult;
-    } else if (scriptArg.startsWith('@')) {
-        return scriptArg.substring(1);
-    }
-    const scriptPath = !/\.js/i.test(scriptArg)
-        ? path.resolve(process.cwd(), 'scripts', scriptArg + '.js')
-        : path.resolve(process.cwd(), scriptArg);
-    if (!fs.existsSync(scriptPath)) {
-        return defaultResult;
-    }
-    try {
-        return asString
-            ? fs.readFileSync(scriptPath, 'utf8')
-            : require(scriptPath);
-    } catch (e) {
-        return defaultResult;
-    }
-}
-
 (async () => {
     const args = require('minimist')(process.argv.slice(2));
+
+    if (args['install']) {
+        return installService();
+    } else if (args['uninstall']) {
+        return uninstallService();
+    }
+
     const command = args['command'] || args ['run'];
 
     const successScript = args['ifYes'] || args['ifTrue'] || args['ifResult'];
@@ -78,4 +64,48 @@ function getSecondaryScript(scriptArg, asString) {
         getSecondaryScript(failureScript)(result);
     }
 })();
+
+
+function installService() {
+    const svc = getService();
+    if (svc.exists) {
+        return svc.restart();
+    }
+    svc.on('install',  () => svc.start());
+    svc.install();
+}
+
+function uninstallService() {
+    getService().uninstall()
+}
+
+function getService() {
+    return new Service({
+        name:'WsWorker',
+        description: 'WsWorker Service for remotely running JS code',
+        script: path.join(__dirname, 'ws-worker.js')
+    });
+}
+
+function getSecondaryScript(scriptArg, asString) {
+    const defaultResult = asString ? '' : noop;
+    if (!scriptArg) {
+        return defaultResult;
+    } else if (scriptArg.startsWith('@')) {
+        return scriptArg.substring(1);
+    }
+    const scriptPath = !/\.js/i.test(scriptArg)
+        ? path.resolve(process.cwd(), 'scripts', scriptArg + '.js')
+        : path.resolve(process.cwd(), scriptArg);
+    if (!fs.existsSync(scriptPath)) {
+        return defaultResult;
+    }
+    try {
+        return asString
+            ? fs.readFileSync(scriptPath, 'utf8')
+            : require(scriptPath);
+    } catch (e) {
+        return defaultResult;
+    }
+}
 
