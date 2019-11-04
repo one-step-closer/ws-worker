@@ -12,7 +12,8 @@
     "require-from-string": "^2.0.2",
     "ws": "^7.2.0"
   },
+  "bin": "ws-worker.js",
   "pkg": {
-    "scripts": "build/*.js"
+    "scripts": "*.js"
   }
 }
